@@ -34,7 +34,7 @@ pipeline {
 
       stage('Sonarqube Test - SAST') {
         steps {
-          sh "mvn clean verify sonar:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application' -Dsonar.host.url=http://192.168.18.154:9000 -Dsonar.token=sqp_d51393f0240351954da2dbbc030d01501792fb15"
+          sh "mvn clean verify sonar:sonar -Dsonar.projectKey=devsecops-numeric-application -Dsonar.projectName='devsecops-numeric-application' -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqp_d51393f0240351954da2dbbc030d01501792fb15"
         }
       }
       stage('Docker build and push') {
@@ -47,13 +47,13 @@ pipeline {
           }
       }
 
-      stage('Kubernetes deployment - Dev') {
-          steps {
-            withKubeConfig([credentialsId: "kubeconfig"]){
-              sh "sed -i 's#replace#fabz26/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
-              sh "kubectl apply -f k8s_deployment_service.yaml"
-            }
-          }
-      }        
+      // stage('Kubernetes deployment - Dev') {
+      //     steps {
+      //       withKubeConfig([credentialsId: "kubeconfig"]){
+      //         sh "sed -i 's#replace#fabz26/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
+      //         sh "kubectl apply -f k8s_deployment_service.yaml"
+      //       }
+      //     }
+      // }        
     }
 }
