@@ -88,6 +88,16 @@
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.7.0.1746</version>
       		</plugin>
+			<!-- Dependency check plugin -->
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>6.1.6</version>
+				<configuration>
+					<format>ALL</format>
+					<failBuildsOnCVSS>9</failBuildsOnCVSS> <!-- Fail the build for CVSS greater than or equal to 9 -->
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
