@@ -43,7 +43,7 @@ pipeline {
         }
       }
 
-      stage(){
+      stage('Dependency check'){
         steps {
           sh 'mvn dependency-check:check'
         }
@@ -53,7 +53,7 @@ pipeline {
           }
         }
       }
-      
+
       stage('Docker build and push') {
           steps {
             withDockerRegistry([credentialsId: "docker-hub", url: ""]){
