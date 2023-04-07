@@ -58,6 +58,12 @@ pipeline {
           }
       }
 
+      stage('Vulnerability Scan - Kubernetes') {
+        steps {
+          sh 'docker run --rm -v $(pwd):/project openpolictyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
+        }
+      }
+
       // stage('Kubernetes deployment - Dev') {
       //     steps {
       //       withKubeConfig([credentialsId: "kubeconfig"]){
