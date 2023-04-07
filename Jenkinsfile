@@ -1,6 +1,14 @@
 pipeline {
   agent any
 
+  environment {
+    deploymentName = "devsecops"
+    containerName = "devsecops-container"
+    serviceName = "devsecops-svc"
+    imageName = "fabz26/numeric-app:${GIT_COMMIT}"
+    applicationURL="http://192.168.18.154"
+    aplicationURI="/increment/99"
+  }
   stages {
       stage('Build Artifact') {
             steps {
@@ -60,16 +68,32 @@ pipeline {
 
       stage('Vulnerability Scan - Kubernetes') {
         steps {
-          sh 'docker run --rm -v $(pwd):/project openpolictyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
+          parallel(
+            "OPA Scan": {
+              sh 'docker run --rm -v $(pwd):/project openpolictyagent/conftest test --policy opa-k8s-security.rego k8s_deployment_service.yaml'
+            },
+            "Kubesec scan": {
+              sh "bash kubesec-scan.sh"
+            }
+          )
         }
       }
 
       // stage('Kubernetes deployment - Dev') {
       //     steps {
-      //       withKubeConfig([credentialsId: "kubeconfig"]){
-      //         sh "sed -i 's#replace#fabz26/numeric-app:${GIT_COMMIT}#g' k8s_deployment_service.yaml"
-      //         sh "kubectl apply -f k8s_deployment_service.yaml"
-      //       }
+      //        parallel(
+                  // "Deployment": {
+            //       withKubeConfig([credentialsId: "kubeconfig"]){
+                      //  sh "bash k8s-deployment.sh"
+                      //  }
+                  // }, 
+                  // "Rollout Status" : {
+                  //   withKubeConfig([credentialsId: "kubeconfig"]) {
+                  //     sh "bash k8s-deployment-rollout-status.sh"
+                  //   }
+                  // }
+
+      )
       //     }
       // }        
     }
