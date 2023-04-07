@@ -40,6 +40,9 @@ pipeline {
             },
             "Trivy Scan": {
               sh "bash trivy-docker-image-scan.sh"
+            },
+            "OPA conftest": {
+              sh 'docker run --rm -v $(pwd):/project openpolicyagent/conftest test --policy opa-docker-security.rego Dockerfile'
             }
           )
         }
@@ -49,7 +52,7 @@ pipeline {
           steps {
             withDockerRegistry([credentialsId: "docker-hub", url: ""]){
               sh 'printenv'
-              sh 'docker build -t fabz26/numeric-app:""$GIT_COMMIT"" .'
+              sh 'sudo docker build -t fabz26/numeric-app:""$GIT_COMMIT"" .'
               sh 'docker push fabz26/numeric-app:""$GIT_COMMIT""'
             }
           }
